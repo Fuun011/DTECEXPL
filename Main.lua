@@ -31,9 +31,12 @@ for petName, petStats in pairs(petsModule) do
         table.insert(listVoid, petName)
     else
         table.insert(listBase, petName)
+    end
 end
 
 
+--------------------------------------------------------------------------------
+--Functions
 function getPetNumber(petName)
     local pPets = game:GetService("Players").LocalPlayer.Pets:GetChildren()
     local count = 0
@@ -84,26 +87,35 @@ function giveVoidPet(petName)
     for i = 1, 5 do
         giveDiamondPet(diamondPet)
     end
-    while getPetNumber(diamondPet) <= 5 Dog
+    while getPetNumber(diamondPet) <= 5 do
         wait(0.1)
     end
     game:GetService("ReplicatedStorage").PetRemotes.VoidPetCraftEvent:FireServer(diamondPet, 100)
 end
 
+function tableContains(tbl, val)
+    for i = 1, #tbl do
+        if tbl[i] == val then return true end
+    end
+    return false
+end
+
 function givePet(petName)
-    if listBase[petName] then
+    if tableContains(listBase, petName) then
         giveBasePet(petName)
-    elseif listGold[petName] then
+    elseif tableContains(listGold, petName) then
         giveGoldPet(petName)
-    elseif listDiamond[petName] then
+    elseif tableContains(listDiamond, petName) then
         giveDiamondPet(petName)
-    elseif listVoid[petName] then
+    elseif tableContains(listVoid, petName) then
         giveVoidPet(petName)
     else
         warn("Unknown pet type: " .. petName)
     end
 end
 
+--------------------------------------------------------------------------------
+--UI
 window:Toggle("Spin Abuse",{},function(value)
 spinabuse = value
 end)
@@ -129,6 +141,11 @@ window:Toggle("Infinite Money",{},function(value)
 infmoney = value
 end)
 
+
+--------------------------------------------------------------------------------
+--Pet givers
+Window:Section("Pet givers")
+window:Section("Base Pets")
 window:Dropdown("Base Pets", {
     location = _G;
     flag = "BasePets";
@@ -136,7 +153,7 @@ window:Dropdown("Base Pets", {
 }, function(new)
     basePet = new
 end)
-window:Button("Get Pet",{},function(value)
+window:Button("Get Pet",function()
     if basePet ~= "" then
         givePet(basePet)
     else
@@ -144,6 +161,7 @@ window:Button("Get Pet",{},function(value)
     end
 end)
 
+window:Section("Gold Pets")
 window:Dropdown("Gold Pets", {
     location = _G;
     flag = "GoldPets";
@@ -151,14 +169,15 @@ window:Dropdown("Gold Pets", {
 }, function(new)
     GoldPet = new
 end)
-window:Button("Get Gold Pet",{},function(value)
+window:Button("Get Gold Pet",function()
     if GoldPet ~= "" then
-        givePet("Gold " .. GoldPet)
+        givePet(GoldPet)
     else
         warn("Please select a gold pet first.")
     end
 end)
 
+window:Section("Diamond Pets")
 window:Dropdown("Diamond Pets", {
     location = _G;
     flag = "DiamondPets";
@@ -166,14 +185,15 @@ window:Dropdown("Diamond Pets", {
 }, function(new)
     DiamondPet = new
 end)
-window:Button("Get Diamond Pet",{},function(value)
+window:Button("Get Diamond Pet",function()
     if DiamondPet ~= "" then
-        givePet("Diamond " .. DiamondPet)
+        givePet(DiamondPet)
     else
         warn("Please select a diamond pet first.")
     end
 end)
 
+window:Section("Void Pets")
 window:Dropdown("Void Pets", {
     location = _G;
     flag = "VoidPets";
@@ -181,14 +201,16 @@ window:Dropdown("Void Pets", {
 }, function(new)
     VoidPet = new
 end)
-window:Button("Get Void Pet",{},function(value)
+window:Button("Get Void Pet",function()
     if VoidPet ~= "" then       
-        givePet("Void " .. VoidPet)
+        givePet(VoidPet)
     else
         warn("Please select a void pet first.")
     end
 end)
 
+----------------------------------------------------------------------------
+--Mainloop
 game:GetService("RunService").RenderStepped:Connect(function()
     if spinabuse and choice then
         print(choice)
